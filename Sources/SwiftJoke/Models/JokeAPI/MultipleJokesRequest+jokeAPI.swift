@@ -3,20 +3,24 @@
 extension MultipleJokesRequest where Response == JokeAPIRequest.MultipleResponse {
     public static func jokeAPI(
         amount: UInt8,
+        authorizationToken: String? = nil,
         blacklistFlags: [JokeAPIRequest.BlacklistFlagWrapper] = [],
         categories: JokeAPIRequest.CategoryWrapper = .any,
         contains: String? = nil,
         idRange: ClosedRange<Int>? = nil,
         lang: JokeAPIRequest.LanguageWrapper = .current,
+        safeMode: Bool = false,
         type: JokeAPIRequest.JokeTypeWrapper = .any
     ) -> MultipleJokesRequest {
         let jokeAPIRequest = JokeAPIRequest(
             amount: amount,
+            authorizationToken: authorizationToken,
             blacklistFlags: blacklistFlags,
             categories: categories,
             contains: contains,
             idRange: idRange,
             lang: lang,
+            safeMode: safeMode,
             type: type
         )
 

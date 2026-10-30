@@ -26,6 +26,7 @@ extension JokeAPIRequest {
             containsQueryItem,
             idRangeQueryItem,
             lang.queryItem,
+            safeModeQueryItem,
             type.queryItem,
         ].compactMap { $0 }
 
@@ -33,7 +34,13 @@ extension JokeAPIRequest {
             .appending(component: categories.pathComponent)
             .appending(queryItems: queryItems)
 
-        return URLRequest(url: url)
+        var request = URLRequest(url: url)
+
+        if let authorizationToken {
+            request.setValue(authorizationToken, forHTTPHeaderField: "Authorization")
+        }
+
+        return request
     }
 }
 
@@ -57,20 +64,7 @@ extension Collection where Element == JokeAPIRequest.Option {
 
         // The contract expects the path to include all the categories separated by a comma e.g.
         // `https://v2.jokeapi.dev/joke/Programming,Miscellaneous,Dark,Pun,Spooky,Christmas`
-        return map(\.pathComponent).sorted().joined(separator: ",")
-    }
-}
-
-extension JokeAPIRequest.Option {
-    fileprivate var pathComponent: String {
-        switch self {
-        case .christmas: "Christmas"
-        case .dark: "Dark"
-        case .miscellaneous: "Miscellaneous"
-        case .programming: "Programming"
-        case .pun: "Pun"
-        case .spooky: "Spooky"
-        }
+        return map(\.rawValue).sorted().joined(separator: ",")
     }
 }
 
@@ -94,6 +88,10 @@ extension JokeAPIRequest {
                 value: "\($0.lowerBound)-\($0.upperBound)"
             )
         }
+    }
+
+    fileprivate var safeModeQueryItem: URLQueryItem {
+        URLQueryItem(name: "safe-mode", value: nil)
     }
 }
 

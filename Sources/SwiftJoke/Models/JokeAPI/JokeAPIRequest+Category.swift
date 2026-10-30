@@ -61,23 +61,23 @@ extension JokeAPIRequest.Category: CaseIterable {
 extension JokeAPIRequest {
     /// Category option.
     @EnumWrapper
-    enum Option: CaseIterable, Codable {
+    enum Option: String, CaseIterable, Codable {
         /// Christmas jokes.
-        case christmas
+        case christmas = "Christmas"
 
         /// Dark jokes.
-        case dark
+        case dark = "Dark"
 
         /// Miscellaneous jokes.
-        case miscellaneous
+        case miscellaneous = "Miscellaneous"
 
         /// Programming jokes.
-        case programming
+        case programming = "Programming"
 
         /// Puns.
-        case pun
+        case pun = "Pun"
 
         /// Spooky jokes.
-        case spooky
+        case spooky = "Spooky"
     }
 }
