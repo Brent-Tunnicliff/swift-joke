@@ -42,7 +42,7 @@ extension JokeAPIRequest.LanguageWrapper {
     public static var current: JokeAPIRequest.LanguageWrapper {
         let locales: [Locale]
 
-        if #available(macOS 26, iOS 26, tvOS 26, watchOS 26, *) {
+        if #available(macOS 26, iOS 26, tvOS 26, watchOS 26, visionOS 26, *) {
             locales = [Locale.autoupdatingCurrent] + Locale.preferredLocales
         } else {
             locales = [Locale.autoupdatingCurrent]

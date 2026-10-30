@@ -1,7 +1,8 @@
 // Copyright © 2026 Brent Tunnicliff <brent@tunnicliff.dev>
 
-#if canImport(FoundationEssentials)
+#if canImport(FoundationEssentials) && canImport(FoundationNetworking)
     import FoundationEssentials
+    import FoundationNetworking
 #else
     import Foundation
 #endif

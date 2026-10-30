@@ -77,6 +77,7 @@ extension JokeError {
         localizedDescription: "TODO: replace"
     )
 
+    #warning("TODO: Address `String(localized:)` not existing in non-Darwin platforms.")
     /// Default case of the `networkResponseErrorStatus` error.
     public static let networkResponseErrorStatus = JokeError(
         code: .networkResponseErrorStatus,
