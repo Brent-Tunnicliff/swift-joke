@@ -1,0 +1,53 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "error_decoding_payload_failed" : {
+      "comment" : "Default message for errors relating to decoding of network response data.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to process network response, unexpected data structure."
+          }
+        }
+      }
+    },
+    "error_network_connection_lost" : {
+      "extractionState" : "manual"
+    },
+    "error_network_request_failed" : {
+      "extractionState" : "manual"
+    },
+    "error_network_request_timed_out" : {
+      "extractionState" : "manual"
+    },
+    "error_network_response_with_error_status" : {
+      "comment" : "Default message for the when network calls return an error status code.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API returned error response."
+          }
+        }
+      }
+    },
+    "error_not_connected_to_internet" : {
+      "extractionState" : "manual"
+    },
+    "error_unexpected_failure" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unexpected failure requesting joke."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

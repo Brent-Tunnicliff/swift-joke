@@ -14,20 +14,19 @@ struct JokeIdentifierTest {
     // I found these example input and output in various StackOverflow answers about UUID v5.
     @Test(arguments: [
         (
-            nameSpace: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+            source: Source.jokeAPI,
             name: "5a23dbfb2626b400190998fc-5pCAvA7h8k9JuErRn",
-            expectedResult: "2522B097-8532-548E-A18B-9366C6511B5E"
+            expectedResult: "2372230b-8344-5dc2-9754-f9903b03a024"
         ),
         (
-            nameSpace: "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
+            source: Source.jokeAPI,
             name: "string",
-            expectedResult: "64be9091-88e8-5476-996b-8b541f7bf3e5"
+            expectedResult: "a3c21a3d-b920-529c-842c-6c864267486b"
         ),
     ])
-    func initWithNameSpaceAndName(nameSpace: String, name: String, expectedResult: String) throws {
-        let nameSpace = try #require(UUID(uuidString: nameSpace))
+    func initWithSourceAndName(source: Source, name: String, expectedResult: String) throws {
         let expectedResult = try JokeIdentifier(value: #require(UUID(uuidString: expectedResult)))
-        #expect(JokeIdentifier(nameSpace: nameSpace, name: name) == expectedResult)
+        #expect(JokeIdentifier(source: source, name: name) == expectedResult)
     }
 
     @Test

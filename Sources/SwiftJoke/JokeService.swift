@@ -6,115 +6,107 @@
     import Foundation
 #endif
 
-public final class JokeService {
+/// Service for getting jokes from various sources.
+public final class JokeService: Sendable {
     /// Shared singleton instance.
     public static let shared = JokeService()
 
+    private let decoder = JSONDecoder()
     private let networkService: any NetworkService
 
-    convenience init() {
-        self.init(networkService: DefaultNetworkService())
-    }
-
-    init(networkService: any NetworkService) {
+    init(networkService: some NetworkService) {
         self.networkService = networkService
     }
 
-    public func joke(from request: any SingleJokeRequest = .any) -> JokeResponse {
-        fatalError("Not yet implemented")
+    private convenience init() {
+        self.init(networkService: .default)
     }
 
-    public func jokes(from request: any MultipleJokesRequest = .any(amount: 10)) -> [JokeResponse] {
-        fatalError("Not yet implemented")
+    public func joke<Response>(from request: SingleJokeRequest<Response>) async throws(JokeError) -> Response {
+        try await fetch(method: request.method)
     }
 
-//    public func joke() -> JokeService {
-//
-//    }
+    public func jokes<Response>(
+        from request: MultipleJokesRequest<Response>
+    ) async throws(JokeError) -> [Response.SingleResponse] {
+        let response: Response = try await fetch(method: request.method)
+        return response.jokes
+    }
 
-//    public func getRandomJoke() async throws -> String {
-//        let jokeURL = baseURL.appendingPathComponent("joke").appendingPathComponent("Any")
-//        let result = try await networkService.data(from: jokeURL)
-//        return String(data: result.data, encoding: .utf8) ?? ""
-//    }
-
-//    public func getJokes(
-//        amount: Int = 1,
-//        blacklistFlags: [BlacklistFlag] = [],
-//        categories: Category = .any,
-//        contains: String? = nil,
-//        idRange: ClosedRange<Int>? = nil,
-//        lang: Language = .english,
-//        type: JokeType? = nil
-//    ) async throws(JokeError) -> [Joke] {
-//        let queryItems: [URLQueryItem] = [
-//            amountQueryItem(value: amount)
-//        ]
-//
-//        let jokeURL = baseURL
-//            .appendingPathComponent("joke")
-//            .appendingPathComponent(categories.pathComponent)
-//
-//        let request = URLRequest(url: jokeURL)
-//
-//        do {
-//            let result = try await networkService.data(for: request)
-//            //        return String(data: result.data, encoding: .utf8) ?? ""
-//            return []
-//        } catch {
-//            // TODO: implement
-//            fatalError()
-//        }
-//    }
-//
-//    private func amountQueryItem(value: Int) -> URLQueryItem {
-//        URLQueryItem(name: "amount", value: value.description)
-//    }
+    private func fetch<Response>(
+        method: JokeRequestMethod
+    ) async throws(JokeError) -> Response where Response: Decodable {
+        switch method {
+        case let .network(urlRequest):
+            try await downloadJoke(from: urlRequest)
+        }
+    }
 }
 
-extension JokeService: Sendable {}
+// MARK: - Download
 
-//extension Category {
-//    fileprivate var pathComponent: String {
-//        switch inner {
-//        case let .custom(value) where value.isEmpty == false:
-//            value.map(\.inner.pathComponent).joined(separator: ",")
-//        // Treat empty custom options the same as any.
-//        case .any, .custom:
-//            "Any"
-//        }
-//    }
-//}
-//
-//extension Category.Option.Inner {
-//    fileprivate var pathComponent: String {
-//        switch self {
-//        case .christmas: "Christmas"
-//        case .dark: "Dark"
-//        case .miscellaneous: "Miscellaneous"
-//        case .programming: "Programming"
-//        case .pun: "Pun"
-//        case .spooky: "Spooky"
-//        }
-//    }
-//}
+extension JokeService {
+    private func downloadJoke<Response>(
+        from request: URLRequest
+    ) async throws(JokeError) -> Response where Response: Decodable {
+        let (data, response) = try await performDownload(from: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw .placeholder
+        }
 
-//protocol ExampleType: Sendable {
-//    static var shared: Self { get }
-//}
-//
-//extension ExampleType where Self == DefaultExampleType {
-//    static var `default`: DefaultExampleType {
-//        .shared
-//    }
-//}
-//
-//final class DefaultExampleType: ExampleType {
-//    static let shared = DefaultExampleType()
-//}
-//
-//func doStuff(_ value: any ExampleType) {}
+        try checkForError(data: data, response: httpResponse)
 
-//extension ExampleType where Self == DefaultExampleType {
-//
-//}
+        do {
+            return try decoder.decode(Response.self, from: data)
+        } catch let error as JokeError {
+            throw error
+        } catch let error as DecodingError {
+            throw .decodingPayloadFailed
+                .with(error: error)
+        } catch {
+            throw .unexpectedFailure
+        }
+    }
+
+    private func performDownload(
+        from request: URLRequest
+    ) async throws(JokeError) -> (data: Data, response: URLResponse) {
+        do {
+            return try await networkService.data(for: request)
+        } catch let error as JokeError {
+            throw error
+        } catch let error as URLError {
+            throw switch error.code {
+            case .timedOut: .networkRequestTimedOut
+            case .networkConnectionLost: .networkConnectionLost
+            case .notConnectedToInternet: .notConnectedToInternet
+            default: .networkRequestFailed
+                    .with(error: error)
+            }
+        } catch {
+            throw .networkRequestFailed
+                .with(error: error)
+        }
+    }
+
+    private func checkForError(data: Data, response: HTTPURLResponse) throws(JokeError) {
+        guard !response.statusCodeIsSuccess else {
+            return
+        }
+
+        #warning("Flesh out conditions to throw on error")
+        fatalError("Not yet implemented")
+    }
+
+    private func decodeResponse<Response>(data: Data) throws(JokeError) -> Response where Response: Decodable {
+        do {
+            return try decoder.decode(Response.self, from: data)
+        } catch let error as JokeError {
+            // If the custom Decoding logic has conditions to throw JokeError, we want to pass them directly through.
+            throw error
+        } catch {
+            throw .decodingPayloadFailed
+                .with(error: error)
+        }
+    }
+}
