@@ -2,7 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "error_decoding_payload_failed" : {
-      "comment" : "Default message for errors relating to decoding of network response data.",
+      "comment" : "Message for errors relating to decoding of network response data.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -14,16 +14,55 @@
       }
     },
     "error_network_connection_lost" : {
-      "extractionState" : "manual"
+      "comment" : "Message for when a network request failed because network connection was lost while the request was in-progress.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network connection lost during request."
+          }
+        }
+      }
+    },
+    "error_network_not_connected_to_internet" : {
+      "comment" : "Message for when a network request failed because the device is not connected to the internet.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No active connection to the internet found."
+          }
+        }
+      }
     },
     "error_network_request_failed" : {
-      "extractionState" : "manual"
+      "comment" : "Catch all message when an unexpected error caused the network request to fail.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to make network request."
+          }
+        }
+      }
     },
     "error_network_request_timed_out" : {
-      "extractionState" : "manual"
+      "comment" : "Message for when a network request took considerably too long and was cancelled.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network request timed out."
+          }
+        }
+      }
     },
     "error_network_response_with_error_status" : {
-      "comment" : "Default message for the when network calls return an error status code.",
+      "comment" : "Message for the when network calls return an error status code.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -33,9 +72,6 @@
           }
         }
       }
-    },
-    "error_not_connected_to_internet" : {
-      "extractionState" : "manual"
     },
     "error_unexpected_failure" : {
       "extractionState" : "manual",

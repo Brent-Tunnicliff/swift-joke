@@ -38,6 +38,15 @@ public struct JokeError {
         )
     }
 
+    init(code: CodeWrapper, localizedDescription: LocalizableString) {
+        self.init(
+            code: code,
+            localizedDescription: localizedDescription.resolve(),
+            localizedFailureReason: nil,
+            userInfo: [:]
+        )
+    }
+
     func with(localizedFailureReason: String) -> JokeError {
         JokeError(
             code: code,
@@ -81,43 +90,43 @@ extension JokeError {
     /// Default case of the `networkResponseErrorStatus` error.
     public static let networkResponseErrorStatus = JokeError(
         code: .networkResponseErrorStatus,
-        localizedDescription: String(localized: .errorNetworkResponseWithErrorStatus)
+        localizedDescription: .errorNetworkResponseWithErrorStatus
     )
 
     /// Default case of the `networkRequestTimedOut` error.
     public static let networkRequestTimedOut = JokeError(
         code: .networkRequestTimedOut,
-        localizedDescription: String(localized: .errorNetworkRequestTimedOut)
+        localizedDescription: .errorNetworkRequestTimedOut
     )
 
     /// Default case of the `notConnectedToInternet` error.
     public static let notConnectedToInternet = JokeError(
         code: .networkRequestTimedOut,
-        localizedDescription: String(localized: .errorNotConnectedToInternet)
+        localizedDescription: .errorNetworkNotConnectedToInternet
     )
 
     /// Default case of the `networkConnectionLost` error.
     public static let networkConnectionLost = JokeError(
         code: .networkConnectionLost,
-        localizedDescription: String(localized: .errorNetworkConnectionLost)
+        localizedDescription: .errorNetworkConnectionLost
     )
 
     /// Default case of the `networkRequestFailed` error.
     public static let networkRequestFailed = JokeError(
         code: .networkRequestFailed,
-        localizedDescription: String(localized: .errorNetworkRequestFailed)
+        localizedDescription: .errorNetworkRequestFailed
     )
 
     /// Default case of the `unexpectedFailure` error.
     public static let unexpectedFailure = JokeError(
         code: .unexpectedFailure,
-        localizedDescription: String(localized: .errorUnexpectedFailure)
+        localizedDescription: .errorUnexpectedFailure
     )
 
     /// Default case of the `decodingPayloadFailed` error.
     public static let decodingPayloadFailed = JokeError(
         code: .decodingPayloadFailed,
-        localizedDescription: String(localized: .errorDecodingPayloadFailed)
+        localizedDescription: .errorDecodingPayloadFailed
     )
 
     /// Returns a Boolean value indicating whether the two errors are of the same domain and code.

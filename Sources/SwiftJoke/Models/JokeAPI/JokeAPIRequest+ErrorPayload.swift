@@ -37,7 +37,7 @@ extension JokeAPIRequest {
 
             return JokeError(
                 code: .networkResponseErrorStatus,
-                localizedDescription: String(localized: .errorNetworkResponseWithErrorStatus),
+                localizedDescription: LocalizableString.errorNetworkResponseWithErrorStatus.resolve(),
                 localizedFailureReason: message,
                 userInfo: userInfo
             )
