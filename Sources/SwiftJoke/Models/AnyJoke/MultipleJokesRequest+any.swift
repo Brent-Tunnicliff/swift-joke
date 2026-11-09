@@ -14,9 +14,6 @@ extension MultipleJokesRequest where Response == AnyRequest.MultipleResponse {
         switch sources.randomElement() {
         case .jokeAPI:
             MultipleJokesRequest<JokeAPIRequest.MultipleResponse>.jokeAPI(amount: amount).eraseToAny()
-        case .officialJokeAPI:
-            MultipleJokesRequest<OfficialJokeAPIRequest.MultipleResponse>.officialJokeAPIRequest(amount: amount)
-                .eraseToAny()
         default:
             throw JokeError.placeholder
         }

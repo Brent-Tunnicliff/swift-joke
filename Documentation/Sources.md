@@ -19,6 +19,8 @@ Each source section provides links, notes, and decision around its use.
 
 Decision: Include
 
+## Not Included Sources
+
 ### [Official Joke API](https://github.com/15Dkatz/official_joke_api)
 
 - Jokes stored in repo, so can support offline if copy the file with credit listed.
@@ -28,9 +30,7 @@ Decision: Include
   - If get more than total then get error "The passed path exceeds the number of jokes (451)."
 - License compatible with own.
 
-Decision: Include
-
-## Not Included Sources
+Decision: ~~Include~~ Repo has been archived and requests are retruning error status, so can no longer use.
 
 ### [icanhazdadjoke](https://icanhazdadjoke.com/api)
 
