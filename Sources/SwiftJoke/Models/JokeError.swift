@@ -47,6 +47,15 @@ public struct JokeError {
         )
     }
 
+    init(code: CodeWrapper, urlError: URLError.Code) {
+        self.init(
+            code: code,
+            localizedDescription: URLError(urlError).localizedDescription,
+            localizedFailureReason: nil,
+            userInfo: [:]
+        )
+    }
+
     func with(localizedFailureReason: String) -> JokeError {
         JokeError(
             code: code,
@@ -71,7 +80,7 @@ public struct JokeError {
             localizedDescription: localizedDescription,
             localizedFailureReason: localizedFailureReason ?? error.localizedDescription,
             userInfo: self.userInfo.merging(
-                ["caused_by": "\(error)"],
+                [UserInfoKey.causedBy: "\(error)"],
                 uniquingKeysWith: { _, new in new }
             )
         )
@@ -96,19 +105,19 @@ extension JokeError {
     /// Default case of the `networkRequestTimedOut` error.
     public static let networkRequestTimedOut = JokeError(
         code: .networkRequestTimedOut,
-        localizedDescription: .errorNetworkRequestTimedOut
+        urlError: .timedOut
     )
 
     /// Default case of the `notConnectedToInternet` error.
     public static let notConnectedToInternet = JokeError(
         code: .networkRequestTimedOut,
-        localizedDescription: .errorNetworkNotConnectedToInternet
+        urlError: .notConnectedToInternet
     )
 
     /// Default case of the `networkConnectionLost` error.
     public static let networkConnectionLost = JokeError(
         code: .networkConnectionLost,
-        localizedDescription: .errorNetworkConnectionLost
+        urlError: .networkConnectionLost
     )
 
     /// Default case of the `networkRequestFailed` error.
@@ -199,3 +208,12 @@ extension JokeError: LocalizedError {
 // MARK: Sendable
 
 extension JokeError: Sendable {}
+
+// MARK: - UserInfoKey
+
+extension JokeError {
+    public enum UserInfoKey {
+        public static let causedBy = "caused_by"
+        public static let status = "status"
+    }
+}

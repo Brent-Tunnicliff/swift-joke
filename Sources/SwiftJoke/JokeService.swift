@@ -23,6 +23,10 @@ public final class JokeService: Sendable {
         self.init(networkService: .default)
     }
 
+    public func joke() async throws(JokeError) -> AnyRequest.SingleResponse {
+        try await joke(from: .any)
+    }
+
     public func joke<Response>(from request: SingleJokeRequest<Response>) async throws(JokeError) -> Response {
         try await fetch(method: request.method)
     }
@@ -55,18 +59,13 @@ extension JokeService {
             throw .placeholder
         }
 
-        try checkForError(data: data, response: httpResponse)
+        try checkForError(
+            data: data,
+            response: httpResponse,
+            responseType: Response.self
+        )
 
-        do {
-            return try decoder.decode(Response.self, from: data)
-        } catch let error as JokeError {
-            throw error
-        } catch let error as DecodingError {
-            throw .decodingPayloadFailed
-                .with(error: error)
-        } catch {
-            throw .unexpectedFailure
-        }
+        return try decodeResponse(data: data)
     }
 
     private func performDownload(
@@ -81,22 +80,39 @@ extension JokeService {
             case .timedOut: .networkRequestTimedOut
             case .networkConnectionLost: .networkConnectionLost
             case .notConnectedToInternet: .notConnectedToInternet
-            default: .networkRequestFailed
-                    .with(error: error)
+            default:
+                .networkRequestFailed.with(error: error)
             }
         } catch {
-            throw .networkRequestFailed
-                .with(error: error)
+            throw .networkRequestFailed.with(error: error)
         }
     }
 
-    private func checkForError(data: Data, response: HTTPURLResponse) throws(JokeError) {
+    private func checkForError<Response>(
+        data: Data,
+        response: HTTPURLResponse,
+        responseType: Response.Type
+    ) throws(JokeError) where Response: Decodable {
         guard !response.statusCodeIsSuccess else {
             return
         }
 
-        #warning("Flesh out conditions to throw on error")
-        fatalError("Not yet implemented")
+        var userInfo: [String: String] = [
+            JokeError.UserInfoKey.status: response.statusCode.description
+        ]
+
+        do {
+            // If the response type handles error types too, then attach to the user info.
+            let errorPayload = try decoder.decode(responseType, from: data)
+            userInfo[JokeError.UserInfoKey.causedBy] = "\(errorPayload)"
+        } catch let error as JokeError {
+            userInfo[JokeError.UserInfoKey.causedBy] = error.description
+        } catch {
+            // Ignore
+        }
+
+        throw JokeError.networkResponseErrorStatus
+            .with(userInfo: userInfo)
     }
 
     private func decodeResponse<Response>(data: Data) throws(JokeError) -> Response where Response: Decodable {
@@ -105,8 +121,11 @@ extension JokeService {
         } catch let error as JokeError {
             // If the custom Decoding logic has conditions to throw JokeError, we want to pass them directly through.
             throw error
-        } catch {
+        } catch let error as DecodingError {
             throw .decodingPayloadFailed
+                .with(error: error)
+        } catch {
+            throw .unexpectedFailure
                 .with(error: error)
         }
     }
