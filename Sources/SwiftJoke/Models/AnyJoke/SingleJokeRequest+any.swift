@@ -12,6 +12,8 @@ extension SingleJokeRequest where Response == AnyRequest.SingleResponse {
         switch sources.randomElement() {
         case .jokeAPI:
             SingleJokeRequest<JokeAPIRequest.SingleResponse>.jokeAPI().eraseToAny()
+        case .officialJokeAPI:
+            SingleJokeRequest<OfficialJokeAPIRequest.SingleResponse>.officialJokeAPIRequest().eraseToAny()
         default:
             throw JokeError.placeholder
         }
@@ -63,6 +65,8 @@ extension AnyRequest.SingleResponse: Codable {
             )
         } else if let jokeAPI = try? JokeAPIRequest.SingleResponse(from: decoder) {
             self.init(wrapped: jokeAPI)
+        } else if let officialJokeAPI = try? OfficialJokeAPIRequest.SingleResponse(from: decoder) {
+            self.init(wrapped: officialJokeAPI)
         } else {
             throw JokeError.placeholder
         }
