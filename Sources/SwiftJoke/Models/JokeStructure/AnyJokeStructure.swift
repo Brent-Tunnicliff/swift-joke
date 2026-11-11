@@ -1,15 +1,18 @@
 // Copyright © 2026 Brent Tunnicliff <brent@tunnicliff.dev>
 
+/// Type erased Joke structure.
 public struct AnyJokeStructure: JokeStructure {
+    /// Returns the full joke as a string without dealing with the different types.
     public var joke: String {
         nested.joke
     }
 
-    public var asAny: AnyJokeStructure {
+    let nested: Nested
+
+    /// Returns self.
+    public func eraseToAny() -> AnyJokeStructure {
         self
     }
-
-    let nested: Nested
 }
 
 extension AnyJokeStructure {
@@ -27,6 +30,7 @@ extension AnyJokeStructure {
 }
 
 extension AnyJokeStructure {
+    /// Initialise a simple instance with a joke.
     public init(joke: String) {
         self.nested = .simple(
             SimpleJokeStructure(joke: joke)

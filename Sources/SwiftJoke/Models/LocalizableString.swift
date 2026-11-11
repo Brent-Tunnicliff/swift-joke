@@ -13,7 +13,9 @@ enum LocalizableString: String, CaseIterable {
     case errorDecodingPayloadFailed = "error_decoding_payload_failed"
     case errorNetworkRequestFailed = "error_network_request_failed"
     case errorNetworkResponseWithErrorStatus = "error_network_response_with_error_status"
+    case errorNoJokesMatchingRequestFilter = "error_no_jokes_matching_request_filter"
     case errorUnexpectedFailure = "error_unexpected_failure"
+    case errorUnexpectedJokeSource = "error_unexpected_joke_source"
 }
 
 extension LocalizableString {

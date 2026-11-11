@@ -9,28 +9,29 @@
 
 /// Service for getting jokes from various sources.
 public final class JokeService: Sendable {
-    /// Shared singleton instance.
-    public static let shared = JokeService()
-
     private let decoder = JSONDecoder()
     private let networkService: any NetworkService
+
+    /// Initialise instance of ``JokeService``.
+    public convenience init() {
+        self.init(networkService: .default)
+    }
 
     init(networkService: some NetworkService) {
         self.networkService = networkService
     }
 
-    private convenience init() {
-        self.init(networkService: .default)
-    }
-
+    /// Get a joke from any source.
     public func joke() async throws(JokeError) -> AnyRequest.SingleResponse {
         try await joke(from: .any)
     }
 
+    /// Get a joke with the defined request configuration.
     public func joke<Response>(from request: SingleJokeRequest<Response>) async throws(JokeError) -> Response {
         try await fetch(method: request.method)
     }
 
+    /// Get a multiple jokes with the defined request configuration.
     public func jokes<Response>(
         from request: MultipleJokesRequest<Response>
     ) async throws(JokeError) -> [Response.SingleResponse] {
@@ -55,15 +56,13 @@ extension JokeService {
         from request: URLRequest
     ) async throws(JokeError) -> Response where Response: Decodable {
         let (data, response) = try await performDownload(from: request)
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw .placeholder
+        if let httpResponse = response as? HTTPURLResponse {
+            try checkForError(
+                data: data,
+                response: httpResponse,
+                responseType: Response.self
+            )
         }
-
-        try checkForError(
-            data: data,
-            response: httpResponse,
-            responseType: Response.self
-        )
 
         return try decodeResponse(data: data)
     }

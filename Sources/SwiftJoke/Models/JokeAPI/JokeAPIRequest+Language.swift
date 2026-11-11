@@ -39,6 +39,8 @@ extension JokeAPIRequest.LanguageWrapper {
     private static let `default` = JokeAPIRequest.LanguageWrapper.english
 
     /// Returns the current language for the application.
+    ///
+    /// Falls back to english if unable to determine, or the current system language is not supported.
     public static var current: JokeAPIRequest.LanguageWrapper {
         let locales: [Locale]
 
@@ -71,8 +73,6 @@ extension JokeAPIRequest.LanguageWrapper {
 
     init?(alpha2Identifier: String?) {
         guard let value = JokeAPIRequest.Language.allCases.first(where: { $0.rawValue == alpha2Identifier }) else {
-            // Default to english if there is no match.
-//            self.init(wrappedValue: .english)
             return nil
         }
 

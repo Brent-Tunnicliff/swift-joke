@@ -1,14 +1,26 @@
 // Copyright © 2026 Brent Tunnicliff <brent@tunnicliff.dev>
 
 extension SingleJokeRequest where Response == JokeAPIRequest.SingleResponse {
+    /// Request configuration for getting a joke from JokeAPI.
+    ///
+    /// - Parameters:
+    ///     - authorizationToken: Optional Authorization header token. Default value is `nil`.
+    ///     - blacklistFlags: Define an array of flags to blacklist. Jokes that match the specified flag(s) will not be served. Default value is empty.
+    ///     - categories: Category of joke to fetch. Default value is `any`.
+    ///     - contains: If the search string filter is used, only jokes that contain the specified string will be returned. Default value is `nil`.
+    ///     - idRange: If this filter is used, you will only get jokes that are within the provided range of IDs. Default value is `nil`.
+    ///     - lang: The language of the joke. Default value `current`.
+    ///     - safeMode: If enabled, JokeAPI will try its best to serve only jokes that are considered safe for everyone. Default value is `true`.
+    ///     - type: Define the format of joke. Default value is `any`.
+    /// - Returns: A configured request object for getting a single joke from JokeAPI.
     public static func jokeAPI(
         authorizationToken: String? = nil,
         blacklistFlags: [JokeAPIRequest.BlacklistFlagWrapper] = [],
         categories: JokeAPIRequest.CategoryWrapper = .any,
         contains: String? = nil,
         idRange: ClosedRange<Int>? = nil,
-        lang: JokeAPIRequest.LanguageWrapper = .english,
-        safeMode: Bool = false,
+        lang: JokeAPIRequest.LanguageWrapper = .current,
+        safeMode: Bool = true,
         type: JokeAPIRequest.JokeTypeWrapper = .any
     ) -> SingleJokeRequest {
         let jokeAPIRequest = JokeAPIRequest(
@@ -28,16 +40,35 @@ extension SingleJokeRequest where Response == JokeAPIRequest.SingleResponse {
 }
 
 extension JokeAPIRequest {
+    /// The joke response returned upon successful request.
     public struct SingleResponse: SingleJokeResponse {
+        /// Category of joke.
         public let category: JokeAPIRequest.OptionWrapper
+
+        /// Flags associated with this joke.
         public let flags: Flags
+
+        /// The unique identifier of the joke object.
         public let id: JokeIdentifier
+
+        /// The unique identifier of the joke object defined by JokeAPI.
         public let internalId: Int
+
+        /// The requested joke.
         public let joke: AnyJokeStructure
+
+        /// The language of the joke.
         public let language: LanguageWrapper
+
+        /// Is the joke considered safe for everyone.
         public let safe: Bool
+
+        /// Source of the joke.
+        ///
+        /// Where the joke came from.
         public var source: SourceWrapper { JokeAPIRequest.source }
 
+        /// Initialises an instance of the response.
         public init(
             category: JokeAPIRequest.OptionWrapper,
             flags: Flags,
@@ -58,14 +89,27 @@ extension JokeAPIRequest {
 }
 
 extension JokeAPIRequest.SingleResponse {
+    /// Flags associated with this joke.
     public struct Flags: Codable, Hashable, Sendable {
+        /// Defines if the joke is considered explicit.
         public let explicit: Bool
+
+        /// Defines if the joke is considered not safe for work (NSFW).
         public let nsfw: Bool
+
+        /// Defines if the joke is considered political.
         public let political: Bool
+
+        /// Defines if the joke is considered racist.
         public let racist: Bool
+
+        /// Defines if the joke is considered religious.
         public let religious: Bool
+
+        /// Defines if the joke is considered sexist.
         public let sexist: Bool
 
+        /// Initialises an instance of Flags.
         public init(explicit: Bool, nsfw: Bool, political: Bool, racist: Bool, religious: Bool, sexist: Bool) {
             self.explicit = explicit
             self.nsfw = nsfw
@@ -93,6 +137,7 @@ extension JokeAPIRequest.SingleResponse: Codable {
         case twopart
     }
 
+    /// Creates a new instance by decoding from the given decoder.
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let isError = try container.decodeIfPresent(Bool.self, forKey: .error) ?? false
@@ -137,6 +182,7 @@ extension JokeAPIRequest.SingleResponse: Codable {
         )
     }
 
+    /// Encodes this value into the given encoder.
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(category, forKey: .category)

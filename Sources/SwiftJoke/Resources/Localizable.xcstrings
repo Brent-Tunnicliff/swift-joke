@@ -37,6 +37,18 @@
         }
       }
     },
+    "error_no_jokes_matching_request_filter" : {
+      "comment" : "Message telling the user that there are no jokes available that meet all the input request filters.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to return joke meeting request filters. Try again with less filters."
+          }
+        }
+      }
+    },
     "error_unexpected_failure" : {
       "comment" : "Message for when an unexpected error flow occurs.",
       "extractionState" : "manual",
@@ -45,6 +57,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unexpected failure requesting joke."
+          }
+        }
+      }
+    },
+    "error_unexpected_joke_source" : {
+      "comment" : "Message for an unexpected case of unknown joke source.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unexpected joke source."
           }
         }
       }

@@ -8,12 +8,13 @@ extension SingleJokeRequest where Response == AnyRequest.SingleResponse {
         }
     }
 
+    /// Request a single joke from any of the input sources.
     public static func any(from sources: Set<SourceWrapper>) throws(JokeError) -> SingleJokeRequest {
         switch sources.randomElement() {
         case .jokeAPI:
             SingleJokeRequest<JokeAPIRequest.SingleResponse>.jokeAPI().eraseToAny()
         default:
-            throw JokeError.placeholder
+            throw .unexpectedJokeSource
         }
     }
 }
@@ -25,11 +26,20 @@ extension SingleJokeRequest {
 }
 
 extension AnyRequest {
+    /// The joke response returned upon successful request.
     public struct SingleResponse: SingleJokeResponse {
+        /// The unique identifier of the joke object.
         public let id: JokeIdentifier
+
+        /// The requested joke.
         public let joke: AnyJokeStructure
+
+        /// Source of the joke.
+        ///
+        /// Where the joke came from.
         public let source: SourceWrapper
 
+        /// Initialises an instance of the response.
         public init(id: JokeIdentifier, joke: AnyJokeStructure, source: SourceWrapper) {
             self.id = id
             self.joke = joke
@@ -39,7 +49,7 @@ extension AnyRequest {
         init(wrapped: any SingleJokeResponse) {
             self.init(
                 id: wrapped.id,
-                joke: wrapped.joke.asAny,
+                joke: wrapped.joke.eraseToAny(),
                 source: wrapped.source
             )
         }
@@ -51,6 +61,9 @@ extension AnyRequest.SingleResponse: Codable {
         case id, joke, source
     }
 
+    /// Creates a new instance by decoding from the given decoder.
+    ///
+    /// Attempts to decode as a `AnyRequest.SingleResponse` type, as well as any other known source type.
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -64,13 +77,7 @@ extension AnyRequest.SingleResponse: Codable {
         } else if let jokeAPI = try? JokeAPIRequest.SingleResponse(from: decoder) {
             self.init(wrapped: jokeAPI)
         } else {
-            throw JokeError.placeholder
+            throw JokeError.unexpectedJokeSource
         }
-    }
-}
-
-extension SingleJokeResponse {
-    public var asAny: AnyRequest.SingleResponse {
-        AnyRequest.SingleResponse(wrapped: self)
     }
 }

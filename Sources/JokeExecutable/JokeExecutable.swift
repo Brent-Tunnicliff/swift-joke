@@ -6,8 +6,8 @@ import SwiftJoke
 @main
 struct JokeExecutable: AsyncParsableCommand {
     mutating func run() async throws {
-        let jokeService = JokeService.shared
-//        let joke = try await jokeProvider.getRandomJoke()
-//        print("Joke: '\(joke)'")
+        let jokeService = JokeService()
+        let joke = try await jokeService.joke(from: .jokeAPI())
+        print("Joke: '\(joke)'")
     }
 }

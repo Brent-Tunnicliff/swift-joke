@@ -17,25 +17,17 @@ public struct JokeError {
     private let localizedFailureReason: String?
     private let userInfo: [String: String]
 
+    /// Initialise an instance of the error.
     public init(
         code: CodeWrapper,
         localizedDescription: String,
-        localizedFailureReason: String?,
-        userInfo: [String: String]
+        localizedFailureReason: String? = nil,
+        userInfo: [String: String] = [:]
     ) {
         self.code = code
         self.localizedDescription = localizedDescription
         self.localizedFailureReason = localizedFailureReason
         self.userInfo = userInfo
-    }
-
-    public init(code: CodeWrapper, localizedDescription: String) {
-        self.init(
-            code: code,
-            localizedDescription: localizedDescription,
-            localizedFailureReason: nil,
-            userInfo: [:]
-        )
     }
 
     init(code: CodeWrapper, localizedDescription: LocalizableString) {
@@ -56,7 +48,7 @@ public struct JokeError {
         )
     }
 
-    func with(localizedFailureReason: String) -> JokeError {
+    func with(localizedFailureReason: String?) -> JokeError {
         JokeError(
             code: code,
             localizedDescription: localizedDescription,
@@ -88,14 +80,6 @@ public struct JokeError {
 }
 
 extension JokeError {
-    #warning("TODO: Not to be included in the final product")
-    @available(*, deprecated, message: "Not to be included in the final product")
-    static let placeholder = JokeError(
-        code: .unexpectedFailure,
-        localizedDescription: "TODO: replace"
-    )
-
-    #warning("TODO: Address `String(localized:)` not existing in non-Darwin platforms.")
     /// Default case of the `networkResponseErrorStatus` error.
     public static let networkResponseErrorStatus = JokeError(
         code: .networkResponseErrorStatus,
@@ -138,6 +122,20 @@ extension JokeError {
         localizedDescription: .errorDecodingPayloadFailed
     )
 
+    /// Default case of the `noJokesMatchingRequestFilter` error.
+    public static let noJokesMatchingRequestFilter = JokeError(
+        code: .noJokesMatchingRequestFilter,
+        localizedDescription: .errorNoJokesMatchingRequestFilter
+    )
+
+    /// Default case of the `unexpectedJokeSource` error.
+    public static let unexpectedJokeSource = JokeError(
+        code: .unexpectedJokeSource,
+        localizedDescription: .errorUnexpectedJokeSource
+    )
+}
+
+extension JokeError {
     /// Returns a Boolean value indicating whether the two errors are of the same domain and code.
     public static func ~= (pattern: JokeError, value: some Error) -> Bool {
         guard let value = value as? JokeError else {
@@ -212,8 +210,14 @@ extension JokeError: Sendable {}
 // MARK: - UserInfoKey
 
 extension JokeError {
-    public enum UserInfoKey {
-        public static let causedBy = "caused_by"
-        public static let status = "status"
+    enum UserInfoKey {
+        static let additionalInfo = "additional_info"
+        static let causedBy = "caused_by"
+        static let endpoint = "endpoint"
+        static let internalError = "internal_error"
+        static let internalCode = "internal_code"
+        static let message = "message"
+        static let status = "status"
+        static let timestamp = "timestamp"
     }
 }

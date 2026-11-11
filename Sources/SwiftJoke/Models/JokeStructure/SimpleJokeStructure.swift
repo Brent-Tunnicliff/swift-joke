@@ -5,10 +5,6 @@ public struct SimpleJokeStructure {
     /// The full joke.
     public let joke: String
 
-    public var asAny: AnyJokeStructure {
-        AnyJokeStructure(nested: .simple(self))
-    }
-
     /// Create an instance on ``SimpleJokeStructure``.
     public init(joke: String) {
         self.joke = joke
@@ -17,10 +13,9 @@ public struct SimpleJokeStructure {
 
 // MARK: JokeStructure
 
-extension SimpleJokeStructure: JokeStructure {}
-
-extension JokeStructure {
-    var asSimpleJokeStructure: SimpleJokeStructure? {
-        self as? SimpleJokeStructure
+extension SimpleJokeStructure: JokeStructure {
+    /// Erase type to ``AnyJokeStructure``.
+    public func eraseToAny() -> AnyJokeStructure {
+        AnyJokeStructure(nested: .simple(self))
     }
 }

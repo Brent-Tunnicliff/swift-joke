@@ -1,5 +1,6 @@
 // Copyright © 2026 Brent Tunnicliff <brent@tunnicliff.dev>
 
+/// The joke response returned upon successful request.
 public protocol SingleJokeResponse<Structure>: Codable, Hashable, Identifiable, Sendable
 where Structure: JokeStructure {
     associatedtype Structure

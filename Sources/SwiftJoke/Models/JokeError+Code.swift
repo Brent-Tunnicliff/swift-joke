@@ -28,6 +28,12 @@ extension JokeError {
 
         /// Decoding the payload failed, likely due to unexpected data structure.
         case decodingPayloadFailed = -1007
+
+        /// No jokes matching request filter.
+        case noJokesMatchingRequestFilter = -1008
+
+        /// Unexpected joke source.
+        case unexpectedJokeSource = -1009
     }
 }
 

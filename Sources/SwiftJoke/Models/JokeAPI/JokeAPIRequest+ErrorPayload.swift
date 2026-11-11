@@ -17,30 +17,29 @@ extension JokeAPIRequest {
         let timestamp: Int?
 
         func asJokeError() -> JokeError {
-            var userInfo: [String: String] = ["endpoint": JokeAPIRequest.source.description]
-
-            #warning("TODO: map some error codes? like 106: 'No matching joke found'?")
-
-            userInfo["internalError"] = internalError?.description
-            userInfo["internalCode"] = code?.description
-            userInfo["message"] = message
-            userInfo["causedBy"] = causedBy.map(ListFormatter.localizedString(byJoining:))
-            userInfo["additionalInfo"] = additionalInfo
+            var userInfo: [String: String] = [JokeError.UserInfoKey.endpoint: JokeAPIRequest.source.description]
+            userInfo[JokeError.UserInfoKey.internalError] = internalError?.description
+            userInfo[JokeError.UserInfoKey.internalCode] = code?.description
+            userInfo[JokeError.UserInfoKey.message] = message
+            userInfo[JokeError.UserInfoKey.causedBy] = causedBy.map(ListFormatter.localizedString(byJoining:))
+            userInfo[JokeError.UserInfoKey.additionalInfo] = additionalInfo
 
             // Converting the timestamp to ISO8601 format.
-            userInfo["timestamp"] = timestamp.map {
+            userInfo[JokeError.UserInfoKey.timestamp] = timestamp.map {
                 let millisecondTimestamp = Double($0)
                 let secondTimestamp = millisecondTimestamp / 1000.0
                 let date = Date(timeIntervalSince1970: secondTimestamp)
                 return ISO8601DateFormatter().string(from: date)
             }
 
-            return JokeError(
-                code: .networkResponseErrorStatus,
-                localizedDescription: LocalizableString.errorNetworkResponseWithErrorStatus.resolve(),
-                localizedFailureReason: message,
-                userInfo: userInfo
-            )
+            let baseError: JokeError =
+                switch self.code {
+                case 106: .noJokesMatchingRequestFilter
+                default: .networkResponseErrorStatus
+                }
+
+            return baseError.with(localizedFailureReason: message)
+                .with(userInfo: userInfo)
         }
     }
 }

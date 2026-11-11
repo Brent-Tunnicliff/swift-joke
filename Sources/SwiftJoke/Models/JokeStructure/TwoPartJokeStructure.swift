@@ -12,10 +12,6 @@ public struct TwoPartJokeStructure {
     /// This is to be shown after the setup.
     public let delivery: String
 
-    public var asAny: AnyJokeStructure {
-        AnyJokeStructure(nested: .twoPart(self))
-    }
-
     /// Create an instance on ``TwoPartJokeStructure``.
     public init(setup: String, delivery: String) {
         self.setup = setup
@@ -30,10 +26,9 @@ extension TwoPartJokeStructure: JokeStructure {
     public var joke: String {
         "\(setup) \(delivery)"
     }
-}
 
-extension JokeStructure {
-    public var asTwoPartJokeStructure: TwoPartJokeStructure? {
-        self as? TwoPartJokeStructure
+    /// Erase type to ``AnyJokeStructure``.
+    public func eraseToAny() -> AnyJokeStructure {
+        AnyJokeStructure(nested: .twoPart(self))
     }
 }
