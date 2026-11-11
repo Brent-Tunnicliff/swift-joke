@@ -1,9 +1,11 @@
 // Copyright © 2026 Brent Tunnicliff <brent@tunnicliff.dev>
 
-#if canImport(FoundationEssentials) && canImport(FoundationInternationalization) && canImport(FoundationNetworking)
+#if canImport(FoundationEssentials) && canImport(FoundationNetworking)
     public import FoundationEssentials
-    import FoundationInternationalization
     import FoundationNetworking
+
+    // Map URLError if the compiler is isolating it inside the module
+    public typealias URLError = FoundationEssentials.URLError
 #else
     public import Foundation
 #endif
