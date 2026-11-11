@@ -2,8 +2,9 @@
 
 import EnumWrapper
 
-#if canImport(FoundationEssentials)
+#if canImport(FoundationEssentials) && canImport(FoundationInternationalization)
     public import FoundationEssentials
+    import FoundationInternationalization
 #else
     public import Foundation
 #endif

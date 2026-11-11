@@ -1,7 +1,8 @@
 // Copyright © 2026 Brent Tunnicliff <brent@tunnicliff.dev>
 
-#if canImport(FoundationEssentials)
+#if canImport(FoundationEssentials) && canImport(FoundationInternationalization)
     import FoundationEssentials
+    import FoundationInternationalization
 #else
     import Foundation
 #endif
@@ -21,7 +22,7 @@ extension JokeAPIRequest {
             userInfo[JokeError.UserInfoKey.internalError] = internalError?.description
             userInfo[JokeError.UserInfoKey.internalCode] = code?.description
             userInfo[JokeError.UserInfoKey.message] = message
-            userInfo[JokeError.UserInfoKey.causedBy] = causedBy.map(ListFormatter.localizedString(byJoining:))
+            userInfo[JokeError.UserInfoKey.causedBy] = causedBy?.formatted(.list(type: .and))
             userInfo[JokeError.UserInfoKey.additionalInfo] = additionalInfo
 
             // Converting the timestamp to ISO8601 format.
@@ -29,7 +30,7 @@ extension JokeAPIRequest {
                 let millisecondTimestamp = Double($0)
                 let secondTimestamp = millisecondTimestamp / 1000.0
                 let date = Date(timeIntervalSince1970: secondTimestamp)
-                return ISO8601DateFormatter().string(from: date)
+                return date.formatted(.iso8601)
             }
 
             let baseError: JokeError =

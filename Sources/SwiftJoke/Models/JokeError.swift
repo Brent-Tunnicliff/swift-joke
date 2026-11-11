@@ -1,7 +1,8 @@
 // Copyright © 2026 Brent Tunnicliff <brent@tunnicliff.dev>
 
-#if canImport(FoundationEssentials)
+#if canImport(FoundationEssentials) && canImport(FoundationNetworking)
     public import FoundationEssentials
+    import FoundationNetworking
 #else
     public import Foundation
 #endif
@@ -10,6 +11,9 @@
 
 /// Represents an error getting Jokes.
 public struct JokeError {
+    /// The domain of the error.
+    public static let errorDomain: String = "SwiftJoke.Error"
+
     /// Code defining the type of error.
     public let code: CodeWrapper
 
@@ -159,22 +163,21 @@ extension JokeError: CustomDebugStringConvertible {
     }
 }
 
-// MARK: CustomNSError
+#if canImport(ObjectiveC)
+    // MARK: CustomNSError
 
-extension JokeError: CustomNSError {
-    /// The domain of the error.
-    public static let errorDomain: String = "SwiftJoke.Error"
+    extension JokeError: CustomNSError {
+        /// The error code within the given domain.
+        public var errorCode: Int {
+            code.rawValue
+        }
 
-    /// The error code within the given domain.
-    public var errorCode: Int {
-        code.rawValue
+        /// The user-info dictionary.
+        public var errorUserInfo: [String: Any] {
+            userInfo
+        }
     }
-
-    /// The user-info dictionary.
-    public var errorUserInfo: [String: Any] {
-        userInfo
-    }
-}
+#endif
 
 // MARK: CustomStringConvertible
 
