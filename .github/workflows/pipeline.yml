@@ -15,7 +15,7 @@ jobs:
         target: [
           { platform: "iOS", simulator_version: "27" },
           { platform: "tvOS", simulator_version: "27" },
-          { platform: "watchOS", simulator_version: "27" },
+          { platform: "watchOS", simulator_version: "27.2" }, # "27" was failing, so specifying the minor version too.
           { platform: "visionOS", simulator_version: "27" },
 
           # macOS runs on the host and doesn't need a simulator.
